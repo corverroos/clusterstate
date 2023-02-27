@@ -9,6 +9,7 @@ type SimulateConfig struct {
 	NumOperators int
 }
 
+// Simulate simulates te building of a cluster state.
 func Simulate(conf SimulateConfig) error {
 	creator := PublicKey("creator")
 	operators := newOperators(conf.NumOperators)

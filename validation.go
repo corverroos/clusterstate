@@ -5,6 +5,8 @@ import (
 	"sort"
 )
 
+// ValidateAdd validates that a mutation can be added to the state.
+// It assumes that fork choice has already been applied to state.
 func ValidateAdd(state State, sm SignedMutation) error {
 	if len(state) == 0 && sm.Mutation.Type != TypeCreateCluster {
 		return fmt.Errorf("first mutation must be create cluster")

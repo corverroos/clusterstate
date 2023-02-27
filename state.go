@@ -6,8 +6,10 @@ import (
 	"sort"
 )
 
+// State represents the cluster state, a DAG of mutations.
 type State []SignedMutation
 
+// Get returns the mutation with the given hash.
 func (s State) Get(h Hash) (SignedMutation, int, error) {
 	for i, m := range s {
 		if m.Hash == h {
@@ -18,6 +20,7 @@ func (s State) Get(h Hash) (SignedMutation, int, error) {
 	return SignedMutation{}, 0, fmt.Errorf("hash not found")
 }
 
+// Children returns the children of the given mutation.
 func (s State) Children(h Hash) ([]SignedMutation, error) {
 	var resp []SignedMutation
 	for _, m := range s {
@@ -35,6 +38,7 @@ func (s State) Children(h Hash) ([]SignedMutation, error) {
 	return resp, nil
 }
 
+// ApprovedBy returns the operators that have approved (built-on) the given mutation.
 func (s State) ApprovedBy(hash Hash) (map[PublicKey]bool, error) {
 	children, err := s.Children(hash)
 	if err != nil {
@@ -56,6 +60,7 @@ func (s State) ApprovedBy(hash Hash) (map[PublicKey]bool, error) {
 	return resp, nil
 }
 
+// Leaves returns the leaves of the DAG.
 func (s State) Leaves() []Hash {
 	hasChildren := map[Hash]bool{}
 	for _, m := range s {
@@ -79,6 +84,8 @@ func (s State) Leaves() []Hash {
 	return resp
 }
 
+// Heights returns the heights of all mutations in the state,
+// the number of mutations each is built on.
 func (s State) Heights() (map[Hash]int, error) {
 	buffer := []Hash{s[0].Hash}
 	heights := map[Hash]int{
@@ -110,6 +117,7 @@ func (s State) Heights() (map[Hash]int, error) {
 	return heights, nil
 }
 
+// Sequence returns a deterministic sequence of mutations that lead to the given mutation.
 func (s State) Sequence(hash Hash) ([]SignedMutation, error) {
 	heights, err := s.Heights()
 	if err != nil {

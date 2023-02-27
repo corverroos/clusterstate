@@ -6,6 +6,7 @@ import (
 	"math"
 )
 
+// Cluster represents a resulting cluster state at a given point in the DAG.
 type Cluster struct {
 	Height            int
 	ApprovedMutations int
@@ -33,11 +34,15 @@ func (c Cluster) Clone() Cluster {
 	return resp
 }
 
+// Operator represents a cluster operator, a human entity
+// operating a charon node.
 type Operator struct {
 	PublicKey PublicKey
 	ENR       string
 }
 
+// Resolve return the resulting cluster state at all heads/forks.
+// It assumes that fork choice has already been applied to state.
 func Resolve(state State) ([]Cluster, error) {
 	if len(state) == 0 {
 		return nil, fmt.Errorf("empty state")

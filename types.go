@@ -7,12 +7,16 @@ import (
 	"time"
 )
 
+// DutyType represents the type of a validator duty; attester, proposer, etc.
 type DutyType int
 
+// PublicKey represents a public key, either of a charon node or an operator or a validator.
 type PublicKey string
 
+// Hash represents a 32 byte hash.
 type Hash [32]byte
 
+// MutationType represents the type of a mutation.
 type MutationType string
 
 func (t MutationType) Approvals() Approvals {
@@ -39,6 +43,7 @@ const (
 	TypeParticipationProof MutationType = "charon/participation_proof/1.0.0"
 )
 
+// SignedMutation represents a mutation signed by the source that created it.
 type SignedMutation struct {
 	Mutation  Mutation
 	Hash      Hash
@@ -46,6 +51,7 @@ type SignedMutation struct {
 	Signature []byte
 }
 
+// Mutation represents a mutation to the cluster state, a vertex in the DAG.
 type Mutation struct {
 	ParentHashes []Hash
 	Type         MutationType
@@ -62,6 +68,7 @@ func (m Mutation) Hash() Hash {
 	return Hash(sha256.Sum256(b))
 }
 
+// CreateCluster represents the TypeCreateCluster mutation data.
 type CreateCluster struct {
 	Name              string
 	Operators         []PublicKey
@@ -69,39 +76,48 @@ type CreateCluster struct {
 	WithdrawalAddress string
 }
 
+// OperatorENR represents the TypeOperatorENR mutation data.
 type OperatorENR struct {
 	ENR string
 }
 
+// GenerateValidators represents the TypeGenerateValidators mutation data.
 type GenerateValidators struct {
 	Validators []Validator
 }
 
+// Validator represents a validator in the cluster.
 type Validator struct {
 	PublicKey    PublicKey
 	PublicShares []PublicKey
 }
 
+// AddValidators represents the TypeAddValidators mutation data.
 type AddValidators struct {
 	NumValidators int
 }
 
+// OperatorAck represents the TypeOperatorAck (noop) mutation data.
 type OperatorAck struct{}
 
+// ChangeOperators represents the TypeChangeOperators mutation data.
 type ChangeOperators struct {
 	NewOperators []PublicKey
 }
 
+// ReshareValidators represents the TypeReshareValidators mutation data.
 type ReshareValidators struct {
 	NewValidators []Validator
 }
 
+// ParticipationProof represents the TypeParticipationProof mutation data.
 type ParticipationProof struct {
 	StartEpoch int
 	EndEpoch   int
 	Validators map[PublicKey]map[DutyType]map[PublicKey]int // map[validator]map[duty]map[operator]count
 }
 
+// AppendToCluster appends the mutation to the cluster, returning the new cluster state.
 func AppendToCluster(sm SignedMutation, cluster Cluster) (Cluster, error) {
 	m, ok := typeDef[sm.Mutation.Type]
 	if !ok {
