@@ -13,12 +13,13 @@ func Simulate(conf SimulateConfig) error {
 	creator := PublicKey("creator")
 	operators := newOperators(conf.NumOperators)
 
-	state := State{newSignedMutation(
+	_ = State{newSignedMutation(
 		creator,
 		TypeCreateCluster,
 		newCreateCluster(operators),
 	)}
 
+	panic("implement")
 }
 
 func newSignedMutation(souce PublicKey, typ MutationType, data any, parents ...SignedMutation) SignedMutation {
