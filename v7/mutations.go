@@ -4,8 +4,6 @@ import (
 	"fmt"
 )
 
-var zeroHash Hash
-
 const (
 	TypeCreateCluster      MutationType = "charon/create_cluster/1.0.0"
 	TypeProposeCluster     MutationType = "charon/propose_cluster/1.0.0"

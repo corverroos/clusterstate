@@ -13,14 +13,11 @@ func MaterialiseDV(dag RawDAG) (ClusterState, error) {
 		}
 	)
 	for i, mutation := range dag {
-		if i == 0 {
-			if mutation.Mutation.Type != TypeCreateCluster {
-				return ClusterState{}, fmt.Errorf("first mutation must be TypeCreateCluster")
-			}
-		} else {
-			if mutation.Mutation.Type == TypeCreateCluster {
-				return ClusterState{}, fmt.Errorf("mutation %d is TypeCreateCluster", i)
-			}
+		// TypeCreateCluster is first, then one or more others
+		if i == 0 && mutation.Mutation.Type != TypeCreateCluster {
+			return ClusterState{}, fmt.Errorf("first mutation must be TypeCreateCluster")
+		} else if i != 0 && mutation.Mutation.Type == TypeCreateCluster {
+			return ClusterState{}, fmt.Errorf("mutation %d is TypeCreateCluster", i)
 		}
 
 		if !allowed[mutation.Mutation.Type] {
